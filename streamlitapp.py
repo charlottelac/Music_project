@@ -6,20 +6,6 @@ from duckduckgo_search import DDGS
 from fastcore.all import *
 from PIL import Image
 import numpy as np
-from matplotlib import pyplot as plt
-import matplotlib.image as img 
-
-
-
-def fetch_instrument_image(instrument_name, brand=None):
-    """Fetches an image URL for a given instrument using DuckDuckGo image search."""
-    query = f"{brand} {instrument_name} instrument" if brand else f"{instrument_name} instrument"
-    results = ddg_images(query, max_results=1)
-    
-    if results:
-        return results[0]['image']  # Return first image URL
-    else:
-        return None  # Return None if no image is found
 
 
 def search_images(term, max_images=1):
@@ -48,9 +34,45 @@ def download_images(keyword, folder_path, max_images=1):
             print(f"Error downloading {image_filename}: {e}")
 
 
+# Create Streamlit app 
+df_new = pd.read_csv('stock_neuf_accessoires_guitares_basses.csv')
+
+df = df_new.copy()
+
+# Streamlit app title
+st.title("Instrument Explorer")
+
+# Dropdown to select an instrument
+instrument_name = st.selectbox("Select an instrument:", df["Nom produit"].unique())
+
+# Get the selected instrument details
+instrument_data = df[df["Nom produit"] == instrument_name].iloc[0]
+
+# Display instrument details
+st.subheader("Instrument Details")
+st.write(f"**Reference:** {instrument_data['Reference']}")
+st.write(f"**Category:** {instrument_data['Categorie']}")
+st.write(f"**Brand:** {instrument_data['Marque']}")
+st.write(f"**Price (Euros):** {instrument_data['Prix']}")
+st.write(f"**Quantite:** {instrument_data['Quantite']}")
+
+# Get the instrument image
+folder_path = '/Users/charlotte_lac/Documents/Music_project/pictures'
+
+term = str(instrument_name)
+download_images(term, 'streamlit_pictures', max_images= 1)
+image_filename = f"{term}_{1}.jpg"
+image_path = os.path.join('streamlit_pictures', image_filename)
+
+# Display instrument image if it exists
+if os.path.exists(image_path):
+    st.image(image_path, caption=instrument_name)
+else:
+    st.write("No image available.")
 
 
-df_new = pd.read_csv('/Users/charlotte_lac/Documents/Music_project/stock_neuf_accessoires_guitares_basses.csv')
-term = str(df_new.loc[0]['Nom produit'])
-
-download_images(term, 'pictures', max_images= 1)
+# Display instrument image
+#if "Image URL" in instrument_data and pd.notna(instrument_data["image_path"]):
+#    st.image(instrument_data["image_path"], caption=instrument_name)
+#else:
+#    st.write("No image available.")
