@@ -3,3 +3,4 @@ numpy==2.2.3
 streamlit==1.43.2
 duckduckgo_search==7.5.2
 requests==2.32.3
+fastcore==1.7.29
