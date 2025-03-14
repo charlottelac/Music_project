@@ -6,7 +6,7 @@ import io
 from duckduckgo_search import DDGS
 from fastcore.all import *
 from PIL import Image
-import numpy as np
+#import numpy as np
 
 @st.cache_data  # Cache function to avoid re-fetching images
 def search_images(term, max_images=1):
@@ -40,12 +40,10 @@ def download_images(keyword, folder_path, max_images=1):
         image_paths.append(image_path)
     return image_paths
 
-# Create Streamlit app 
-df_2 = pd.read_csv('https://drive.google.com/uc?id=1Y8O8WElfZOcwU9ISZ6p1tWlsPbH4R5Fy',delimiter=",") #neuf_guitares_etbasses
-
-df_1 = pd.read_csv('https://drive.google.com/uc?id=1pfzDTY7KK_mRaYZdW7EODKhGR1Dmo6hd',delimiter=",") #neuuf_accessoires_guitares_bases
-
-df = pd.concat([df_1, df_2], axis = 0)
+# Load datasets
+df_2 = pd.read_csv('https://drive.google.com/uc?id=1Y8O8WElfZOcwU9ISZ6p1tWlsPbH4R5Fy', delimiter=",") #neuf_guitares_etbasses
+df_1 = pd.read_csv('https://drive.google.com/uc?id=1pfzDTY7KK_mRaYZdW7EODKhGR1Dmo6hd', delimiter=",") #neuf_accessoires_guitares_bases
+df = pd.concat([df_1, df_2], axis=0)
 
 # Streamlit app title
 st.title("Instrument Explorer")
@@ -64,17 +62,28 @@ st.write(f"**Brand:** {instrument_data['Marque']}")
 st.write(f"**Price:** {instrument_data['Prix']} Euros")
 st.write(f"**Quantity:** {instrument_data['Quantite']}")
 
-# Add to wish list button
-# wish_list is a list, appened when button is clicked on, 
-# then when download is clicked on the list is changed into a dataframe that can be downloaded as csv
-wish_list = []
+# Initialize session state for wishlist if not exists
+if "wish_list" not in st.session_state:
+    st.session_state.wish_list = []
 
-if st.button("Add to wish list", icon=":material/add_shopping_cart:"):
-    wish_list.append(instrument_data)
-    
-if st.button("Download wishlist", icon=":material/download:"):
-    if len(wish_list) > 0:
-        st.write(wish_list)
+# Add to wish list button
+if st.button("Add to wish list", key="add_wishlist"):
+    st.session_state.wish_list.append(instrument_data.to_dict())
+    st.success(f"Added {instrument_name} to your wishlist!")
+
+# Download wishlist button
+if st.button("Download wishlist", key="download_wishlist"):
+    if len(st.session_state.wish_list) > 0:
+        wishlist_df = pd.DataFrame(st.session_state.wish_list)
+        csv = wishlist_df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name="wishlist.csv",
+            mime="text/csv",
+        )
+    else:
+        st.warning("Your wishlist is empty!")
 
 # Get the instrument image
 folder_path = 'streamlit_pictures'
