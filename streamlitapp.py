@@ -41,16 +41,16 @@ def download_images(keyword, folder_path, max_images=1):
     return image_paths
 
 # Create Streamlit app 
-df_2 = pd.read_csv('https://drive.google.com/uc?id=1Y8O8WElfZOcwU9ISZ6p1tWlsPbH4R5Fy',delimiter=",") #guitares_etbasses
+df_2 = pd.read_csv('https://drive.google.com/uc?id=1Y8O8WElfZOcwU9ISZ6p1tWlsPbH4R5Fy',delimiter=",") #neuf_guitares_etbasses
 
-df_1 = pd.read_csv('https://drive.google.com/uc?id=1pfzDTY7KK_mRaYZdW7EODKhGR1Dmo6hd',delimiter=",") #accessoires
+df_1 = pd.read_csv('https://drive.google.com/uc?id=1pfzDTY7KK_mRaYZdW7EODKhGR1Dmo6hd',delimiter=",") #neuuf_accessoires_guitares_bases
 
 df = pd.concat([df_1, df_2], axis = 0)
 
 # Streamlit app title
 st.title("Instrument Explorer")
 
-# Dropdown to select an instrument
+# Dropdown list to select an instrument
 instrument_name = st.selectbox("Select an instrument:", df["Nom produit"].unique())
 
 # Get the selected instrument details
@@ -66,13 +66,15 @@ st.write(f"**Quantity:** {instrument_data['Quantite']}")
 
 # Add to wish list button
 # wish_list is a list, appened when button is clicked on, 
-# then when download is clicked on the list is changed into a dataframe
+# then when download is clicked on the list is changed into a dataframe that can be downloaded as csv
 wish_list = []
+
 if st.button("Add to wish list", icon=":material/add_shopping_cart:"):
     wish_list.append(instrument_data)
     
-st.button("Download wishlist", icon=":material/download:")
-
+if st.button("Download wishlist", icon=":material/download:"):
+    if len(wish_list) > 0:
+        st.write(wish_list)
 
 # Get the instrument image
 folder_path = 'streamlit_pictures'
