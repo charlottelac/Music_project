@@ -1,4 +1,4 @@
-Instrument Explorer is a **Streamlit app** that allows users to browse, view, and create a wishlist of musical instruments using a dataset stored on a public Google Drive. The app fetches instrument images from the internet with DuckDuckgo and enables users to download their wishlist as a CSV file.
+Instrument Explorer is a **Streamlit app** that allows users to browse, view, and create a wishlist of musical instruments using a dataset stored on a public Google Drive. The app fetches instrument images from the internet with DuckDuckgo and enables users to download their wishlist as a CSV file; a cache function avoids dowloading the pictures several times. 
 
 ## Features
 - **Select an instrument** from a dropdown list.

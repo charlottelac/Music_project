@@ -68,6 +68,8 @@ st.write(f"**Quantity:** {instrument_data['Quantite']}")
 # Button to go through the list and select an instrument
 if st.button("Next"): 
     st.session_state.current_index = (st.session_state.current_index + 1) % len(df)
+    instrument_data = df.iloc[st.session_state.current_index]
+    instrument_name = instrument_data['Nom produit']
 
 rem = len(df)- st.session_state.current_index
 st.write(f"{rem} **remaining items** ")
@@ -78,11 +80,11 @@ image_paths = download_images(str(instrument_name), folder_path, max_images=1)
 
 # Display instrument image if it exists
 if image_paths and os.path.exists(image_paths[0]) and image_paths[0].endswith(('.jpg', '.png', '.jpeg')):
-    st.image(image_paths[0], caption=instrument_name)
+    st.image(image_paths[0], caption=instrument_name, width=300)
 else:
     st.warning("No image available or failed to fetch.")
 
-# Initialize session state for wishlist if not exists
+# Initialize session state for wishlist if it doesn't exists
 if "wish_list" not in st.session_state:
     st.session_state.wish_list = []
 
