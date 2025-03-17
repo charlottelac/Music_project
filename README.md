@@ -58,6 +58,9 @@ Instrument-Explorer/
 **Click "Add to Wishlist"** to save an instrument.
 **Click "Download Wishlist"** to export the selection as a CSV.
 
+PS:
+I used the function written by Prateek Vyas for picture downloading, see https://medium.com/technology-hits/automating-image-downloads-and-visualization-with-duckduckgo-search-and-python-in-kaggle-ddbdd95bce0d
+
 ## License 
 This project is open-source and available under the **MIT License**.
 
