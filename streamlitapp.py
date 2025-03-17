@@ -51,11 +51,17 @@ if df.empty:
 st.title("Instrument Explorer")
 
 # Initialize the current index
+instrument_data = df.iloc[0]
+instrument_name = instrument_data['Nom produit']
+
 if "current_index" not in st.session_state:
     st.session_state.current_index = 0
 
-instrument_data = df.iloc[st.session_state.current_index]
-instrument_name = instrument_data['Nom produit']
+# Button to go through the list and select an instrument
+if st.button("See next item", icon=":material/manage_search:"): 
+    st.session_state.current_index = (st.session_state.current_index + 1) % len(df)
+    instrument_data = df.iloc[st.session_state.current_index]
+    instrument_name = instrument_data['Nom produit']
 
 # Display instrument details
 st.subheader("Instrument Details")
@@ -64,12 +70,6 @@ st.write(f"**Category:** {instrument_data['Categorie']}")
 st.write(f"**Brand:** {instrument_data['Marque']}")
 st.write(f"**Price:** {instrument_data['Prix']} Euros")
 st.write(f"**Quantity:** {instrument_data['Quantite']}")
-
-# Button to go through the list and select an instrument
-if st.button("Next"): 
-    st.session_state.current_index = (st.session_state.current_index + 1) % len(df)
-    instrument_data = df.iloc[st.session_state.current_index]
-    instrument_name = instrument_data['Nom produit']
 
 rem = len(df)- st.session_state.current_index
 st.write(f"{rem} **remaining items** ")
@@ -89,12 +89,12 @@ if "wish_list" not in st.session_state:
     st.session_state.wish_list = []
 
 # Add to wish list button
-if st.button("Add to wish list", key="add_wishlist"):
+if st.button("Add to wish list", icon=":material/add_shopping_cart:"):
     st.session_state.wish_list.append(instrument_data.to_dict())
     st.success(f"Added {instrument_name} to your wishlist!")
 
 # Download wishlist button
-if st.button("Download wishlist", key="download_wishlist"):
+if st.button("Download wishlist", icon=":material/download:"):
     if len(st.session_state.wish_list) > 0:
         wishlist_df = pd.DataFrame(st.session_state.wish_list)
         csv = wishlist_df.to_csv(index=False).encode("utf-8")
