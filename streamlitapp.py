@@ -6,7 +6,6 @@ import io
 from duckduckgo_search import DDGS
 from fastcore.all import *
 from PIL import Image
-#import numpy as np
 
 @st.cache_data  # Cache function to avoid re-fetching images
 def search_images(term, max_images=1):
@@ -26,7 +25,6 @@ def download_images(keyword, folder_path, max_images=1):
     for i, url in enumerate(urls):
         image_filename = f"{keyword}_{i + 1}.jpg"
         image_path = os.path.join(folder_path, image_filename)
-        
         if not os.path.exists(image_path):  # Check if image already exists
             try:
                 img_data = requests.get(url).content
@@ -42,17 +40,22 @@ def download_images(keyword, folder_path, max_images=1):
 
 # Load datasets
 df_2 = pd.read_csv('https://drive.google.com/uc?id=1Y8O8WElfZOcwU9ISZ6p1tWlsPbH4R5Fy', delimiter=",") #neuf_guitares_etbasses
-df_1 = pd.read_csv('https://drive.google.com/uc?id=1pfzDTY7KK_mRaYZdW7EODKhGR1Dmo6hd', delimiter=",") #neuf_accessoires_guitares_bases
+df_1 = pd.read_csv('https://drive.google.com/uc?id=1pfzDTY7KK_mRaYZdW7EODKhGR1Dmo6hd', delimiter=",") #neuf_accessoires_guitares_basses
 df = pd.concat([df_1, df_2], axis=0)
+
+if df.empty:
+    st.write("No instruments available.")
+    st.stop()
 
 # Streamlit app title
 st.title("Instrument Explorer")
 
-# Dropdown list to select an instrument
-instrument_name = st.selectbox("Select an instrument:", df["Nom produit"].unique())
+# Initialize the current index
+if "current_index" not in st.session_state:
+    st.session_state.current_index = 0
 
-# Get the selected instrument details
-instrument_data = df[df["Nom produit"] == instrument_name].iloc[0]
+instrument_data = df.iloc[st.session_state.current_index]
+instrument_name = instrument_data['Nom produit']
 
 # Display instrument details
 st.subheader("Instrument Details")
@@ -61,6 +64,23 @@ st.write(f"**Category:** {instrument_data['Categorie']}")
 st.write(f"**Brand:** {instrument_data['Marque']}")
 st.write(f"**Price:** {instrument_data['Prix']} Euros")
 st.write(f"**Quantity:** {instrument_data['Quantite']}")
+
+# Button to go through the list and select an instrument
+if st.button("Next"): 
+    st.session_state.current_index = (st.session_state.current_index + 1) % len(df)
+
+rem = len(df)- st.session_state.current_index
+st.write(f"{rem} **remaining items** ")
+
+# Get the instrument image
+folder_path = 'streamlit_pictures'
+image_paths = download_images(str(instrument_name), folder_path, max_images=1)
+
+# Display instrument image if it exists
+if image_paths and os.path.exists(image_paths[0]) and image_paths[0].endswith(('.jpg', '.png', '.jpeg')):
+    st.image(image_paths[0], caption=instrument_name)
+else:
+    st.warning("No image available or failed to fetch.")
 
 # Initialize session state for wishlist if not exists
 if "wish_list" not in st.session_state:
@@ -84,13 +104,3 @@ if st.button("Download wishlist", key="download_wishlist"):
         )
     else:
         st.warning("Your wishlist is empty!")
-
-# Get the instrument image
-folder_path = 'streamlit_pictures'
-image_paths = download_images(str(instrument_name), folder_path, max_images=1)
-
-# Display instrument image if it exists
-if image_paths and os.path.exists(image_paths[0]):
-    st.image(image_paths[0], caption=instrument_name)
-else:
-    st.write("No image available.")
