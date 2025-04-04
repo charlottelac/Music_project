@@ -13,7 +13,7 @@ Instrument Explorer is a **Streamlit app** that allows users to browse, view, an
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/Instrument-Explorer.git
+git clone https://github.com/charlottelac/Instrument-Explorer.git
 cd Instrument-Explorer
 ```
 
